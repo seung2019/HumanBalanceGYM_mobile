@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metabolic Rate Calculator</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            padding-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 20px;
+            height: 100vh;
+            margin: 0;
+            flex-wrap: wrap; /* Allow the containers to wrap */
+        }
+        .form-container, .results-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 100%; /* Make full width on small screens */
+            max-width: 700px; /* Limit max width */
+            margin: 10px;
+            text-align: center;
+        }
+        @media (min-width: 768px) { /* Adjustments for tablets and desktops */
+            .form-container, .results-container {
+                width: 48%; /* Set side by side on larger screens */
+            }
+        }
+        .card {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: left;
+        }
+        .card-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0056b3;
+            text-align: center;
+        }
+        .data {
+            font-size: 18px; /* Smaller text on smaller screens */
+            margin-top: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 50%;
+            text-align: left;
+        }
+        .value {
+            font-weight: bold;
+            display: inline-block;
+            width: 50%;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <img src="https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2022\3\23\JK_CO_BwkeCyl22032322033589.jpg" alt="HumanBalance Logo" style="width: 270px; height: auto; margin-bottom: 20px;">
+        <h1>Metabolic Rate Calculator</h1>
+          <form id="calcForm">
+              <div class="form-group row">
+                  <label for="height" class="col-sm-4 col-form-label">Height (cm):</label>
+                  <div class="col-sm-8">
+                      <input type="number" class="form-control" id="height" required>
+                  </div>
+              </div>
+              <div class="form-group row">
+                  <label for="weight" class="col-sm-4 col-form-label">Weight (kg):</label>
+                  <div class="col-sm-8">
+                      <input type="number" class="form-control" id="weight" required>
+                  </div>
+              </div>
+              <div class="form-group row">
+                  <label for="age" class="col-sm-4 col-form-label">Age:</label>
+                  <div class="col-sm-8">
+                      <input type="number" class="form-control" id="age" required>
+                  </div>
+              </div>
+              <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Gender:</label>
+                  <div class="col-sm-8 gender-toggle">
+                      <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" id="male" name="gender" class="custom-control-input" checked>
+                          <label class="custom-control-label" for="male">Male</label>
+                      </div>
+                      <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" id="female" name="gender" class="custom-control-input">
+                          <label class="custom-control-label" for="female">Female</label>
+                      </div>
+                  </div>
+              </div>
+              <div class="form-group row">
+                  <label for="exercise_level" class="col-sm-4 col-form-label">Frequency:</label>
+                  <div class="col-sm-8">
+                      <select class="form-control" id="exercise_level">
+                          <option value="1.2">0 (no exercise)</option>
+                          <option value="1.375">1 (light exercise)</option>
+                          <option value="1.55">2 (moderate exercise)</option>
+                          <option value="1.725">3 (heavy exercise)</option>
+                          <option value="1.9">4 (very heavy exercise)</option>
+                          <option value="2.075">5 (hard exercise)</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="form-group row">
+                  <label for="goal" class="col-sm-4 col-form-label">Goal:</label>
+                  <div class="col-sm-8">
+                      <select class="form-control" id="goal">
+                          <option value="diet">Diet</option>
+                          <option value="bulk">Bulk Up</option>
+                          <option value="maintenance">Maintain Weight</option>
+                      </select>
+                  </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Calculate</button>
+          </form>
+      </div>
+      <div class="results-container">
+          <h1 class="text-center">Results</h1>
+          <div id="results"></div>
+      </div>
+      <script>
+        document.getElementById('calcForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            calculateResults();
+        });
+
+        function calculateResults() {
+            var height = parseFloat(document.getElementById('height').value);
+            var weight = parseFloat(document.getElementById('weight').value);
+            var age = parseInt(document.getElementById('age').value);
+            var gender = document.querySelector('input[name="gender"]:checked').value;
+            var exerciseLevel = parseFloat(document.getElementById('exercise_level').value);
+            var goal = document.getElementById('goal').value;
+
+            var results = calculateAll(height, weight, age, gender, exerciseLevel, goal);
+            displayResults(results);
+        }
+
+        function calculateAll(height, weight, age, gender, exerciseLevel, goal) {
+            var bmr = gender === 'male' ?
+                88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age) :
+                447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            var tdee = bmr * exerciseLevel;
+
+            var macros = calculateMacros(tdee, goal);
+            var protein = macros[0];
+            var carbs = macros[1];
+            var fats = macros[2];
+
+            var mealsPerDay = 3;
+            var proteinPerMeal = protein / mealsPerDay;
+            var carbsPerMeal = carbs / mealsPerDay;
+            var fatsPerMeal = fats / mealsPerDay;
+            var caloriesPerMeal = tdee / mealsPerDay;
+
+            return { tdee, protein, carbs, fats, proteinPerMeal, carbsPerMeal, fatsPerMeal, caloriesPerMeal };
+        }
+
+        function calculateMacros(calories, goal) {
+            var protein, carbs, fats;
+            switch(goal) {
+                case 'diet':
+                    protein = calories * 0.40 / 4; // 40% calories from protein
+                    carbs = calories * 0.40 / 4; // 40% calories from carbs
+                    fats = calories * 0.20 / 9; // 20% calories from fats
+                    break;
+                case 'bulk':
+                    protein = calories * 0.30 / 4; // 30% calories from protein
+                    carbs = calories * 0.50 / 4; // 50% calories from carbs
+                    fats = calories * 0.20 / 9; // 20% calories from fats
+                    break;
+                default: // maintenance
+                    protein = calories * 0.30 / 4; // 30% calories from protein
+                    carbs = calories * 0.40 / 4; // 40% calories from carbs
+                    fats = calories * 0.30 / 9; // 30% calories from fats
+            }
+            return [protein, carbs, fats];
+        }
+
+        function displayResults(results) {
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="card">
+                    <div class="card-header">Total Daily Energy Expenditure (TDEE)</div>
+                    <div class="data"><span class="label">Calories:</span><span class="value">${results.tdee.toFixed(2)} kcal</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Nutrient Breakdown</div>
+                    <div class="data"><span class="label">Protein:</span><span class="value">${results.protein.toFixed(2)} g</span></div>
+                    <div class="data"><span class="label">Carbohydrates:</span><span class="value">${results.carbs.toFixed(2)} g</span></div>
+                    <div class="data"><span class="label">Fats:</span><span class="value">${results.fats.toFixed(2)} g</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Per Meal Breakdown</div>
+                    <div class="data"><span class="label">Calories per Meal:</span><span class="value">${results.caloriesPerMeal.toFixed(2)} kcal</span></div>
+                    <div class="data"><span class="label">Protein per Meal:</span><span class="value">${results.proteinPerMeal.toFixed(2)} g</span></div>
+                    <div class="data"><span class="label">Carbohydrates per Meal:</span><span class="value">${results.carbsPerMeal.toFixed(2)} g</span></div>
+                    <div class="data"><span class="label">Fats per Meal:</span><span class="value">${results.fatsPerMeal.toFixed(2)} g</span></div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
