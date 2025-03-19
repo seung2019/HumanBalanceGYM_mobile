@@ -1,323 +1,342 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <title>AutoML Platform Demo</title>
+  <meta charset="UTF-8" />
+  <title>AutoML Platform - Prototype (Bootstrap)</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
   <style>
-    /* 간단한 CSS 스타일 예시 */
+    /* 추가 커스텀 스타일 (선택사항) */
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f2f4f7;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-    header {
-      background-color: #0f62fe;
-      color: #fff;
-      padding: 1rem 2rem;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: row;
-      margin: 1rem;
-    }
-
-    /* 사이드바 메뉴 */
     .sidebar {
-      width: 220px;
-      background-color: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      margin-right: 1rem;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar li {
-      margin-bottom: 1rem;
-    }
-    .sidebar li a {
-      color: #333;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .sidebar li a:hover {
-      color: #0f62fe;
-      transition: 0.2s;
-    }
-
-    /* 메인 콘텐츠 영역 */
-    .main-content {
-      flex: 1;
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 1rem 2rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      min-height: 100vh; /* 화면 전체 높이 */
+      border-right: 1px solid #ddd;
     }
     .section-title {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-      color: #0f62fe;
-      border-bottom: 2px solid #0f62fe;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #0d6efd;
       display: inline-block;
       padding-bottom: 0.3rem;
+      color: #0d6efd;
     }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.3rem;
+    /* 사이드바 메뉴 활성화 시 강조 */
+    .nav-link.active {
+      background-color: #e9ecef;
       font-weight: 600;
     }
-    .form-group input[type=file],
-    .form-group input[type=number],
-    .form-group select,
-    .form-group button {
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    .form-group button {
-      background-color: #0f62fe;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      margin-top: 0.3rem;
-      cursor: pointer;
-    }
-    .form-group button:hover {
-      background-color: #0043ce;
-    }
-
-    .progress {
-      width: 100%;
-      background-color: #ebebeb;
-      height: 18px;
-      border-radius: 9px;
-      overflow: hidden;
-      margin: 0.5rem 0;
-    }
-    .progress-bar {
-      height: 100%;
-      background-color: #0f62fe;
-      width: 0%;
-      transition: width 0.4s ease;
-    }
-
-    /* 하단 로그 출력 영역 */
+    /* 로그 영역 스크롤 */
     .training-log {
-      background: #fafafa;
-      padding: 1rem;
-      height: 100px;
+      height: 150px;
       overflow-y: auto;
-      border: 1px solid #ddd;
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
       border-radius: 4px;
+      padding: 0.75rem;
       font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 0.5rem;
-      color: #666;
-      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>AutoML Platform Prototype</h1>
+<header class="navbar navbar-dark bg-primary p-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <i class="bi bi-robot"></i> AutoML Platform
+    </a>
+    <span class="text-white">Prototype</span>
+  </div>
 </header>
 
-<div class="container">
+<div class="container-fluid">
+  <div class="row">
+    <!-- 사이드바 (왼쪽 메뉴) -->
+    <nav id="sidebarMenu" class="col-md-2 col-lg-2 d-md-block bg-light sidebar collapse p-3">
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action active" data-bs-toggle="collapse" href="#dataSection" role="button" aria-expanded="true">
+          <i class="bi bi-file-earmark-arrow-up"></i> 데이터 업로드
+        </a>
+        <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#nasSection" role="button" aria-expanded="false">
+          <i class="bi bi-diagram-3"></i> 모델 탐색(NAS)
+        </a>
+        <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#hpoSection" role="button" aria-expanded="false">
+          <i class="bi bi-sliders"></i> 하이퍼파라미터(HPO)
+        </a>
+        <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#trainSection" role="button" aria-expanded="false">
+          <i class="bi bi-bar-chart-line"></i> 모델 학습
+        </a>
+        <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#evalSection" role="button" aria-expanded="false">
+          <i class="bi bi-check2-square"></i> 평가 & 배포
+        </a>
+      </div>
+    </nav>
 
-  <!-- 사이드바 -->
-  <aside class="sidebar">
-    <ul>
-      <li><a href="#data-section">① 데이터 업로드</a></li>
-      <li><a href="#nas-section">② 모델 탐색 (NAS)</a></li>
-      <li><a href="#hpo-section">③ 하이퍼파라미터</a></li>
-      <li><a href="#train-section">④ 모델 학습</a></li>
-      <li><a href="#evaluation-section">⑤ 평가 & 배포</a></li>
-    </ul>
-  </aside>
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      
+      <!-- (1) 데이터 업로드 섹션 -->
+      <div class="collapse show" id="dataSection">
+        <h2 class="section-title mt-4">① 데이터 업로드</h2>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="dataFile" class="form-label fw-semibold">학습 데이터셋 (.csv, .xlsx 등)</label>
+            <input class="form-control" type="file" id="dataFile" />
+          </div>
+          <div class="col-md-6">
+            <label for="preprocessingSelect" class="form-label fw-semibold">전처리 옵션</label>
+            <select class="form-select" id="preprocessingSelect">
+              <option value="basic">기본 정제</option>
+              <option value="advanced">고급 정제 (결측치, 이상치 처리 등)</option>
+              <option value="autoaugment">자동 증강 (이미지 데이터)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="handleDataUpload()">
+          <i class="bi bi-upload"></i> 데이터 로드
+        </button>
+        <hr />
+        <div>
+          <h5>데이터 미리보기</h5>
+          <table class="table table-sm table-striped" id="dataPreviewTable">
+            <thead>
+              <tr>
+                <th>컬럼명1</th>
+                <th>컬럼명2</th>
+                <th>컬럼명3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>샘플 데이터</td>
+                <td>샘플 데이터</td>
+                <td>샘플 데이터</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-  <!-- 메인 콘텐츠 -->
-  <main class="main-content">
-    
-    <!-- (1) 데이터 업로드 섹션 -->
-    <section id="data-section">
-      <h2 class="section-title">① 데이터 업로드</h2>
-      <div class="form-group">
-        <label for="dataFile">학습 데이터셋 업로드</label>
-        <input type="file" id="dataFile" accept=".csv, .xlsx, .txt">
+      <!-- (2) 모델 아키텍처 탐색 섹션 -->
+      <div class="collapse" id="nasSection">
+        <h2 class="section-title mt-4">② 모델 아키텍처 탐색 (NAS)</h2>
+        <div class="mb-3">
+          <label for="nasMethod" class="form-label fw-semibold">NAS 방법</label>
+          <select class="form-select w-50" id="nasMethod">
+            <option value="reinforcement">강화학습 기반</option>
+            <option value="evolution">진화 알고리즘 기반</option>
+            <option value="gradient">Gradient-based (DARTS)</option>
+          </select>
+        </div>
+        <button class="btn btn-success" onclick="startNasSearch()">
+          <i class="bi bi-play-circle"></i> 모델 구조 자동 탐색 시작
+        </button>
       </div>
-      <div class="form-group">
-        <label for="dataPreview">전처리 옵션</label>
-        <select id="dataPreprocessing">
-          <option value="basic_cleaning">기본 정제</option>
-          <option value="advanced_cleaning">고급 정제 (결측치, 이상치 처리)</option>
-          <option value="auto_augment">자동 증강 (이미지 데이터)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <button onclick="handleDataUpload()">데이터 로드 및 미리보기</button>
-      </div>
-    </section>
-    <hr />
 
-    <!-- (2) 모델 아키텍처 탐색 (NAS) 섹션 -->
-    <section id="nas-section">
-      <h2 class="section-title">② 모델 아키텍처 탐색 (NAS)</h2>
-      <div class="form-group">
-        <label for="nasMethod">NAS 탐색 방법</label>
-        <select id="nasMethod">
-          <option value="reinforcement">강화학습 기반</option>
-          <option value="evolution">진화 알고리즘 기반</option>
-          <option value="gradient">Gradient-based (DARTS)</option>
-        </select>
+      <!-- (3) 하이퍼파라미터 최적화 섹션 -->
+      <div class="collapse" id="hpoSection">
+        <h2 class="section-title mt-4">③ 하이퍼파라미터 최적화 (HPO)</h2>
+        <div class="row mb-3">
+          <div class="col-sm-6 col-md-4">
+            <label for="hpoMethod" class="form-label fw-semibold">최적화 기법</label>
+            <select class="form-select" id="hpoMethod">
+              <option value="bayesian">베이지안 최적화</option>
+              <option value="hyperband">Hyperband</option>
+              <option value="random_search">Random Search</option>
+            </select>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <label for="learningRate" class="form-label fw-semibold">Learning Rate (학습률)</label>
+            <input type="number" step="0.0001" value="0.001" class="form-control" id="learningRate" />
+          </div>
+        </div>
+        <button class="btn btn-warning text-white" onclick="optimizeHyperparams()">
+          <i class="bi bi-sliders"></i> 하이퍼파라미터 최적화
+        </button>
       </div>
-      <div class="form-group">
-        <button onclick="startNasSearch()">모델 구조 자동 탐색 시작</button>
-      </div>
-    </section>
-    <hr />
 
-    <!-- (3) 하이퍼파라미터 최적화 (HPO) 섹션 -->
-    <section id="hpo-section">
-      <h2 class="section-title">③ 하이퍼파라미터 최적화 (HPO)</h2>
-      <div class="form-group">
-        <label for="optimizer">최적화 기법 선택</label>
-        <select id="optimizer">
-          <option value="bayes_opt">베이지안 최적화</option>
-          <option value="hyperband">Hyperband</option>
-          <option value="random">Random Search</option>
-        </select>
+      <!-- (4) 모델 학습 섹션 -->
+      <div class="collapse" id="trainSection">
+        <h2 class="section-title mt-4">④ 모델 학습</h2>
+        <div class="row mb-3">
+          <div class="col-sm-6 col-md-3">
+            <label for="epochInput" class="form-label fw-semibold">Epoch 수</label>
+            <input type="number" class="form-control" id="epochInput" value="10" />
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <label for="batchSizeInput" class="form-label fw-semibold">Batch Size</label>
+            <input type="number" class="form-control" id="batchSizeInput" value="32" />
+          </div>
+        </div>
+        <button class="btn btn-primary mb-3" onclick="startTraining()">
+          <i class="bi bi-cpu"></i> 학습 시작
+        </button>
+        <!-- 학습 진행 상황 표시 -->
+        <div class="progress mb-2" style="height: 22px;">
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            aria-valuemin="0" aria-valuemax="100"
+            id="trainingProgress"
+            style="width: 0%;"
+          >
+            0%
+          </div>
+        </div>
+        <!-- 로그 출력 영역 -->
+        <div class="training-log" id="trainingLog">
+          <!-- 실시간 로그가 여기에 표시됩니다. -->
+        </div>
       </div>
-      <div class="form-group">
-        <label for="learningRate">Learning Rate (학습률)</label>
-        <input type="number" id="learningRate" step="0.0001" value="0.001"/>
-      </div>
-      <div class="form-group">
-        <button onclick="optimizeHyperparams()">하이퍼파라미터 최적화</button>
-      </div>
-    </section>
-    <hr />
 
-    <!-- (4) 모델 학습 섹션 -->
-    <section id="train-section">
-      <h2 class="section-title">④ 모델 학습</h2>
-      <div class="form-group">
-        <label for="epochInput">Epoch 수</label>
-        <input type="number" id="epochInput" value="10"/>
+      <!-- (5) 모델 평가 & 배포 섹션 -->
+      <div class="collapse" id="evalSection">
+        <h2 class="section-title mt-4">⑤ 모델 평가 & 배포</h2>
+        <div class="mb-3">
+          <p>
+            학습된 모델의 <strong>정확도</strong>, <strong>F1 Score</strong>, <strong>ROC 곡선</strong> 등
+            다양한 지표를 확인할 수 있습니다.
+          </p>
+          <button class="btn btn-info" onclick="showEvaluationModal()">
+            <i class="bi bi-bar-chart-fill"></i> 모델 성능 보기
+          </button>
+        </div>
+        <div class="mb-3">
+          <button class="btn btn-success" onclick="deployModel()">
+            <i class="bi bi-cloud-upload"></i> 모델 배포
+          </button>
+          <span id="deployMsg" class="ms-2 fw-bold text-success"></span>
+        </div>
       </div>
-      <div class="form-group">
-        <button onclick="startTraining()">학습 시작</button>
-      </div>
-      <!-- 진행상황 표시용 프로그레스 바 -->
-      <div class="progress">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <!-- 학습 로그 영역 -->
-      <div class="training-log" id="trainingLog" placeholder="결과 로그가 여기에 표시됩니다...">
-      </div>
-    </section>
-    <hr />
 
-    <!-- (5) 모델 평가/배포 섹션 -->
-    <section id="evaluation-section">
-      <h2 class="section-title">⑤ 모델 평가 & 배포</h2>
-      <p>학습된 모델의 정확도, 손실, ROC 곡선 등 다양한 평가 지표를 확인하고 최종 모델을 배포할 수 있습니다.</p>
-      <button onclick="deployModel()">모델 배포</button>
-      <p id="deployMessage" style="margin-top:0.5rem; color:green; font-weight:bold;"></p>
-    </section>
-
-  </main>
+    </main>
+  </div>
 </div>
 
-<footer>
-  &copy; 2025 AutoML Platform Prototype. All rights reserved.
+<!-- 평가 결과 모달창 -->
+<div class="modal fade" id="evaluationModal" tabindex="-1" aria-labelledby="evaluationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="evaluationModalLabel">모델 평가 결과</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <p>예시 지표:</p>
+        <ul>
+          <li>Accuracy: <span id="accValue">93.2%</span></li>
+          <li>F1 Score: <span id="f1Value">0.91</span></li>
+          <li>ROC AUC: <span id="rocValue">0.95</span></li>
+        </ul>
+        <p>이곳에 <strong>그래프(Chart.js)</strong> 등을 삽입해 시각화 가능</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="text-center py-3 bg-light mt-4">
+  <small class="text-muted">&copy; 2025 AutoML Platform Prototype</small>
 </footer>
 
-<script>
-  // 간단한 JavaScript 예시
+<!-- Bootstrap JS (팝오버, 모달 등 기능 사용을 위해 필요) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  // (1) 데이터 업로드 버튼 클릭 시 동작
+<script>
+  // ----------------------------------------------
+  // 1) 데이터 업로드 (샘플 기능)
+  // ----------------------------------------------
   function handleDataUpload() {
     const fileInput = document.getElementById('dataFile');
-    const preprocessing = document.getElementById('dataPreprocessing').value;
+    const option = document.getElementById('preprocessingSelect').value;
     if (!fileInput.value) {
-      alert('학습 데이터셋을 업로드해주세요!');
+      alert('학습 데이터셋을 업로드하세요!');
       return;
     }
-    // 실제 환경에서는 파일을 서버에 업로드 후, 미리보기 기능 구현
-    alert(`[데이터 업로드 완료]\n - 파일명: ${fileInput.files[0].name}\n - 전처리 옵션: ${preprocessing}`);
+    const fileName = fileInput.files[0].name;
+    alert(`파일: ${fileName}\n전처리 옵션: ${option}\n(실제 업로드/전처리는 서버 로직에 연결 필요)`);
+
+    // 여기서 서버에 업로드 -> 응답 받은 후 미리보기 테이블 업데이트 가능
+    document.querySelector('#dataPreviewTable tbody').innerHTML = `
+      <tr>
+        <td>Example1</td>
+        <td>Example2</td>
+        <td>Example3</td>
+      </tr>
+    `;
   }
 
-  // (2) NAS 탐색 버튼 클릭 시 동작
+  // ----------------------------------------------
+  // 2) 모델 아키텍처 탐색 (NAS)
+  // ----------------------------------------------
   function startNasSearch() {
-    const nasMethod = document.getElementById('nasMethod').value;
-    alert(`[NAS 시작] ${nasMethod} 기반으로 모델 아키텍처를 탐색합니다...`);
-    // 실제 NAS 로직 (reinforcement/evolution/gradient)을 서버 측에서 실행
+    const method = document.getElementById('nasMethod').value;
+    alert(`${method} 기반의 NAS 탐색을 시작합니다.\n(실제 로직은 서버 측과 연동 필요)`);
   }
 
-  // (3) 하이퍼파라미터 최적화 버튼 클릭 시 동작
+  // ----------------------------------------------
+  // 3) 하이퍼파라미터 최적화 (HPO)
+  // ----------------------------------------------
   function optimizeHyperparams() {
-    const method = document.getElementById('optimizer').value;
+    const hpoMethod = document.getElementById('hpoMethod').value;
     const lr = document.getElementById('learningRate').value;
-    alert(`[HPO 시작]\n - 기법: ${method}\n - 초기 학습률: ${lr}`);
-    // 실제 HPO 로직 (베이지안, Hyperband 등)을 서버 측에서 실행
+    alert(`[HPO 시작]\n기법: ${hpoMethod}\n초기 Learning Rate: ${lr}\n(실제 최적화 알고리즘은 서버에서 수행)`);
   }
 
-  // (4) 모델 학습 시작
-  let trainingProgress = 0;
-  let trainingInterval = null;
-
+  // ----------------------------------------------
+  // 4) 모델 학습
+  // ----------------------------------------------
+  let trainProgress = 0;
+  let trainInterval = null;
   function startTraining() {
     const epoch = document.getElementById('epochInput').value;
-    addTrainingLog(`학습을 시작합니다. (Epoch: ${epoch})`);
-    trainingProgress = 0;
-    document.getElementById('progressBar').style.width = '0%';
+    const batchSize = document.getElementById('batchSizeInput').value;
 
-    if (trainingInterval) {
-      clearInterval(trainingInterval);
-    }
-    trainingInterval = setInterval(() => {
-      trainingProgress += Math.random() * 10;  // 임의로 증가
-      if (trainingProgress >= 100) {
-        trainingProgress = 100;
-        clearInterval(trainingInterval);
+    addTrainingLog(`학습 시작 (Epoch: ${epoch}, Batch Size: ${batchSize})`);
+    trainProgress = 0;
+    const bar = document.getElementById('trainingProgress');
+    bar.style.width = '0%';
+    bar.innerText = '0%';
+
+    if (trainInterval) clearInterval(trainInterval);
+    trainInterval = setInterval(() => {
+      trainProgress += Math.random() * 15; // 임의 값으로 증가
+      if (trainProgress >= 100) {
+        trainProgress = 100;
+        clearInterval(trainInterval);
         addTrainingLog('학습 완료! 모델이 준비되었습니다.');
-      } else {
-        addTrainingLog(`학습 진행 중... ${Math.floor(trainingProgress)}%`);
       }
-      document.getElementById('progressBar').style.width = trainingProgress + '%';
+      bar.style.width = trainProgress + '%';
+      bar.innerText = Math.floor(trainProgress) + '%';
     }, 1000);
   }
 
-  function addTrainingLog(message) {
-    const logArea = document.getElementById('trainingLog');
-    const currentTime = new Date().toLocaleTimeString();
-    logArea.innerText += `[${currentTime}] ${message}\n`;
-    logArea.scrollTop = logArea.scrollHeight;
+  function addTrainingLog(msg) {
+    const logBox = document.getElementById('trainingLog');
+    const time = new Date().toLocaleTimeString();
+    logBox.textContent += `[${time}] ${msg}\n`;
+    logBox.scrollTop = logBox.scrollHeight;
   }
 
-  // (5) 모델 배포
+  // ----------------------------------------------
+  // 5) 모델 평가 & 배포
+  // ----------------------------------------------
+  function showEvaluationModal() {
+    const myModal = new bootstrap.Modal(document.getElementById('evaluationModal'));
+    // 실제로는 서버에서 계산된 지표를 받아와서 표시
+    // document.getElementById('accValue').innerText = '99.9%';
+    myModal.show();
+  }
+
   function deployModel() {
-    document.getElementById('deployMessage').innerText = '모델이 성공적으로 배포되었습니다!';
-    addTrainingLog('모델 배포 완료. (엔드포인트가 활성화되었습니다.)');
-    // 실제 환경에서는 모델 파일을 서버나 클라우드 환경(Kubernetes 등)에 배포
+    document.getElementById('deployMsg').innerText = '모델이 성공적으로 배포되었습니다!';
+    addTrainingLog('모델 배포 완료. 서비스 엔드포인트가 생성되었습니다.');
   }
 </script>
 
