@@ -1,216 +1,325 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metabolic Rate Calculator</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f4f9;
-            color: #333;
-            padding-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 20px;
-            height: 100vh;
-            margin: 0;
-            flex-wrap: wrap; /* Allow the containers to wrap */
-        }
-        .form-container, .results-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            width: 100%; /* Make full width on small screens */
-            max-width: 700px; /* Limit max width */
-            margin: 10px;
-            text-align: center;
-        }
-        @media (min-width: 768px) { /* Adjustments for tablets and desktops */
-            .form-container, .results-container {
-                width: 48%; /* Set side by side on larger screens */
-            }
-        }
-        .card {
-            background-color: #ffffff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            text-align: left;
-        }
-        .card-header {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0056b3;
-            text-align: center;
-        }
-        .data {
-            font-size: 18px; /* Smaller text on smaller screens */
-            margin-top: 10px;
-        }
-        .label {
-            font-weight: bold;
-            display: inline-block;
-            width: 50%;
-            text-align: left;
-        }
-        .value {
-            font-weight: bold;
-            display: inline-block;
-            width: 50%;
-            text-align: right;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <title>AutoML Platform Demo</title>
+  <style>
+    /* 간단한 CSS 스타일 예시 */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f7;
+    }
+
+    header {
+      background-color: #0f62fe;
+      color: #fff;
+      padding: 1rem 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      margin: 1rem;
+    }
+
+    /* 사이드바 메뉴 */
+    .sidebar {
+      width: 220px;
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      margin-right: 1rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar li {
+      margin-bottom: 1rem;
+    }
+    .sidebar li a {
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .sidebar li a:hover {
+      color: #0f62fe;
+      transition: 0.2s;
+    }
+
+    /* 메인 콘텐츠 영역 */
+    .main-content {
+      flex: 1;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #0f62fe;
+      border-bottom: 2px solid #0f62fe;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+    .form-group input[type=file],
+    .form-group input[type=number],
+    .form-group select,
+    .form-group button {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-group button {
+      background-color: #0f62fe;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      margin-top: 0.3rem;
+      cursor: pointer;
+    }
+    .form-group button:hover {
+      background-color: #0043ce;
+    }
+
+    .progress {
+      width: 100%;
+      background-color: #ebebeb;
+      height: 18px;
+      border-radius: 9px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #0f62fe;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* 하단 로그 출력 영역 */
+    .training-log {
+      background: #fafafa;
+      padding: 1rem;
+      height: 100px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 0.5rem;
+      color: #666;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="form-container">
-        <img src="https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2022\3\23\JK_CO_BwkeCyl22032322033589.jpg" alt="HumanBalance Logo" style="width: 270px; height: auto; margin-bottom: 20px;">
-        <h1>Metabolic Rate Calculator</h1>
-          <form id="calcForm">
-              <div class="form-group row">
-                  <label for="height" class="col-sm-4 col-form-label">Height (cm):</label>
-                  <div class="col-sm-8">
-                      <input type="number" class="form-control" id="height" required>
-                  </div>
-              </div>
-              <div class="form-group row">
-                  <label for="weight" class="col-sm-4 col-form-label">Weight (kg):</label>
-                  <div class="col-sm-8">
-                      <input type="number" class="form-control" id="weight" required>
-                  </div>
-              </div>
-              <div class="form-group row">
-                  <label for="age" class="col-sm-4 col-form-label">Age:</label>
-                  <div class="col-sm-8">
-                      <input type="number" class="form-control" id="age" required>
-                  </div>
-              </div>
-              <div class="form-group row">
-                  <label class="col-sm-4 col-form-label">Gender:</label>
-                  <div class="col-sm-8 gender-toggle">
-                      <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" id="male" name="gender" class="custom-control-input" checked>
-                          <label class="custom-control-label" for="male">Male</label>
-                      </div>
-                      <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" id="female" name="gender" class="custom-control-input">
-                          <label class="custom-control-label" for="female">Female</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="form-group row">
-                  <label for="exercise_level" class="col-sm-4 col-form-label">Frequency:</label>
-                  <div class="col-sm-8">
-                      <select class="form-control" id="exercise_level">
-                          <option value="1.2">0 (no exercise)</option>
-                          <option value="1.375">1 (light exercise)</option>
-                          <option value="1.55">2 (moderate exercise)</option>
-                          <option value="1.725">3 (heavy exercise)</option>
-                          <option value="1.9">4 (very heavy exercise)</option>
-                          <option value="2.075">5 (hard exercise)</option>
-                      </select>
-                  </div>
-              </div>
-              <div class="form-group row">
-                  <label for="goal" class="col-sm-4 col-form-label">Goal:</label>
-                  <div class="col-sm-8">
-                      <select class="form-control" id="goal">
-                          <option value="diet">Diet</option>
-                          <option value="bulk">Bulk Up</option>
-                          <option value="maintenance">Maintain Weight</option>
-                      </select>
-                  </div>
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Calculate</button>
-          </form>
+
+<header>
+  <h1>AutoML Platform Prototype</h1>
+</header>
+
+<div class="container">
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <ul>
+      <li><a href="#data-section">① 데이터 업로드</a></li>
+      <li><a href="#nas-section">② 모델 탐색 (NAS)</a></li>
+      <li><a href="#hpo-section">③ 하이퍼파라미터</a></li>
+      <li><a href="#train-section">④ 모델 학습</a></li>
+      <li><a href="#evaluation-section">⑤ 평가 & 배포</a></li>
+    </ul>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="main-content">
+    
+    <!-- (1) 데이터 업로드 섹션 -->
+    <section id="data-section">
+      <h2 class="section-title">① 데이터 업로드</h2>
+      <div class="form-group">
+        <label for="dataFile">학습 데이터셋 업로드</label>
+        <input type="file" id="dataFile" accept=".csv, .xlsx, .txt">
       </div>
-      <div class="results-container">
-          <h1 class="text-center">Results</h1>
-          <div id="results"></div>
+      <div class="form-group">
+        <label for="dataPreview">전처리 옵션</label>
+        <select id="dataPreprocessing">
+          <option value="basic_cleaning">기본 정제</option>
+          <option value="advanced_cleaning">고급 정제 (결측치, 이상치 처리)</option>
+          <option value="auto_augment">자동 증강 (이미지 데이터)</option>
+        </select>
       </div>
-      <script>
-        document.getElementById('calcForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            calculateResults();
-        });
+      <div class="form-group">
+        <button onclick="handleDataUpload()">데이터 로드 및 미리보기</button>
+      </div>
+    </section>
+    <hr />
 
-        function calculateResults() {
-            var height = parseFloat(document.getElementById('height').value);
-            var weight = parseFloat(document.getElementById('weight').value);
-            var age = parseInt(document.getElementById('age').value);
-            var gender = document.querySelector('input[name="gender"]:checked').value;
-            var exerciseLevel = parseFloat(document.getElementById('exercise_level').value);
-            var goal = document.getElementById('goal').value;
+    <!-- (2) 모델 아키텍처 탐색 (NAS) 섹션 -->
+    <section id="nas-section">
+      <h2 class="section-title">② 모델 아키텍처 탐색 (NAS)</h2>
+      <div class="form-group">
+        <label for="nasMethod">NAS 탐색 방법</label>
+        <select id="nasMethod">
+          <option value="reinforcement">강화학습 기반</option>
+          <option value="evolution">진화 알고리즘 기반</option>
+          <option value="gradient">Gradient-based (DARTS)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button onclick="startNasSearch()">모델 구조 자동 탐색 시작</button>
+      </div>
+    </section>
+    <hr />
 
-            var results = calculateAll(height, weight, age, gender, exerciseLevel, goal);
-            displayResults(results);
-        }
+    <!-- (3) 하이퍼파라미터 최적화 (HPO) 섹션 -->
+    <section id="hpo-section">
+      <h2 class="section-title">③ 하이퍼파라미터 최적화 (HPO)</h2>
+      <div class="form-group">
+        <label for="optimizer">최적화 기법 선택</label>
+        <select id="optimizer">
+          <option value="bayes_opt">베이지안 최적화</option>
+          <option value="hyperband">Hyperband</option>
+          <option value="random">Random Search</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="learningRate">Learning Rate (학습률)</label>
+        <input type="number" id="learningRate" step="0.0001" value="0.001"/>
+      </div>
+      <div class="form-group">
+        <button onclick="optimizeHyperparams()">하이퍼파라미터 최적화</button>
+      </div>
+    </section>
+    <hr />
 
-        function calculateAll(height, weight, age, gender, exerciseLevel, goal) {
-            var bmr = gender === 'male' ?
-                88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age) :
-                447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
-            var tdee = bmr * exerciseLevel;
+    <!-- (4) 모델 학습 섹션 -->
+    <section id="train-section">
+      <h2 class="section-title">④ 모델 학습</h2>
+      <div class="form-group">
+        <label for="epochInput">Epoch 수</label>
+        <input type="number" id="epochInput" value="10"/>
+      </div>
+      <div class="form-group">
+        <button onclick="startTraining()">학습 시작</button>
+      </div>
+      <!-- 진행상황 표시용 프로그레스 바 -->
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <!-- 학습 로그 영역 -->
+      <div class="training-log" id="trainingLog" placeholder="결과 로그가 여기에 표시됩니다...">
+      </div>
+    </section>
+    <hr />
 
-            var macros = calculateMacros(tdee, goal);
-            var protein = macros[0];
-            var carbs = macros[1];
-            var fats = macros[2];
+    <!-- (5) 모델 평가/배포 섹션 -->
+    <section id="evaluation-section">
+      <h2 class="section-title">⑤ 모델 평가 & 배포</h2>
+      <p>학습된 모델의 정확도, 손실, ROC 곡선 등 다양한 평가 지표를 확인하고 최종 모델을 배포할 수 있습니다.</p>
+      <button onclick="deployModel()">모델 배포</button>
+      <p id="deployMessage" style="margin-top:0.5rem; color:green; font-weight:bold;"></p>
+    </section>
 
-            var mealsPerDay = 3;
-            var proteinPerMeal = protein / mealsPerDay;
-            var carbsPerMeal = carbs / mealsPerDay;
-            var fatsPerMeal = fats / mealsPerDay;
-            var caloriesPerMeal = tdee / mealsPerDay;
+  </main>
+</div>
 
-            return { tdee, protein, carbs, fats, proteinPerMeal, carbsPerMeal, fatsPerMeal, caloriesPerMeal };
-        }
+<footer>
+  &copy; 2025 AutoML Platform Prototype. All rights reserved.
+</footer>
 
-        function calculateMacros(calories, goal) {
-            var protein, carbs, fats;
-            switch(goal) {
-                case 'diet':
-                    protein = calories * 0.40 / 4; // 40% calories from protein
-                    carbs = calories * 0.40 / 4; // 40% calories from carbs
-                    fats = calories * 0.20 / 9; // 20% calories from fats
-                    break;
-                case 'bulk':
-                    protein = calories * 0.30 / 4; // 30% calories from protein
-                    carbs = calories * 0.50 / 4; // 50% calories from carbs
-                    fats = calories * 0.20 / 9; // 20% calories from fats
-                    break;
-                default: // maintenance
-                    protein = calories * 0.30 / 4; // 30% calories from protein
-                    carbs = calories * 0.40 / 4; // 40% calories from carbs
-                    fats = calories * 0.30 / 9; // 30% calories from fats
-            }
-            return [protein, carbs, fats];
-        }
+<script>
+  // 간단한 JavaScript 예시
 
-        function displayResults(results) {
-            var resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `
-                <div class="card">
-                    <div class="card-header">Total Daily Energy Expenditure (TDEE)</div>
-                    <div class="data"><span class="label">Calories:</span><span class="value">${results.tdee.toFixed(2)} kcal</span></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">Nutrient Breakdown</div>
-                    <div class="data"><span class="label">Protein:</span><span class="value">${results.protein.toFixed(2)} g</span></div>
-                    <div class="data"><span class="label">Carbohydrates:</span><span class="value">${results.carbs.toFixed(2)} g</span></div>
-                    <div class="data"><span class="label">Fats:</span><span class="value">${results.fats.toFixed(2)} g</span></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">Per Meal Breakdown</div>
-                    <div class="data"><span class="label">Calories per Meal:</span><span class="value">${results.caloriesPerMeal.toFixed(2)} kcal</span></div>
-                    <div class="data"><span class="label">Protein per Meal:</span><span class="value">${results.proteinPerMeal.toFixed(2)} g</span></div>
-                    <div class="data"><span class="label">Carbohydrates per Meal:</span><span class="value">${results.carbsPerMeal.toFixed(2)} g</span></div>
-                    <div class="data"><span class="label">Fats per Meal:</span><span class="value">${results.fatsPerMeal.toFixed(2)} g</span></div>
-                </div>
-            `;
-        }
-    </script>
+  // (1) 데이터 업로드 버튼 클릭 시 동작
+  function handleDataUpload() {
+    const fileInput = document.getElementById('dataFile');
+    const preprocessing = document.getElementById('dataPreprocessing').value;
+    if (!fileInput.value) {
+      alert('학습 데이터셋을 업로드해주세요!');
+      return;
+    }
+    // 실제 환경에서는 파일을 서버에 업로드 후, 미리보기 기능 구현
+    alert(`[데이터 업로드 완료]\n - 파일명: ${fileInput.files[0].name}\n - 전처리 옵션: ${preprocessing}`);
+  }
+
+  // (2) NAS 탐색 버튼 클릭 시 동작
+  function startNasSearch() {
+    const nasMethod = document.getElementById('nasMethod').value;
+    alert(`[NAS 시작] ${nasMethod} 기반으로 모델 아키텍처를 탐색합니다...`);
+    // 실제 NAS 로직 (reinforcement/evolution/gradient)을 서버 측에서 실행
+  }
+
+  // (3) 하이퍼파라미터 최적화 버튼 클릭 시 동작
+  function optimizeHyperparams() {
+    const method = document.getElementById('optimizer').value;
+    const lr = document.getElementById('learningRate').value;
+    alert(`[HPO 시작]\n - 기법: ${method}\n - 초기 학습률: ${lr}`);
+    // 실제 HPO 로직 (베이지안, Hyperband 등)을 서버 측에서 실행
+  }
+
+  // (4) 모델 학습 시작
+  let trainingProgress = 0;
+  let trainingInterval = null;
+
+  function startTraining() {
+    const epoch = document.getElementById('epochInput').value;
+    addTrainingLog(`학습을 시작합니다. (Epoch: ${epoch})`);
+    trainingProgress = 0;
+    document.getElementById('progressBar').style.width = '0%';
+
+    if (trainingInterval) {
+      clearInterval(trainingInterval);
+    }
+    trainingInterval = setInterval(() => {
+      trainingProgress += Math.random() * 10;  // 임의로 증가
+      if (trainingProgress >= 100) {
+        trainingProgress = 100;
+        clearInterval(trainingInterval);
+        addTrainingLog('학습 완료! 모델이 준비되었습니다.');
+      } else {
+        addTrainingLog(`학습 진행 중... ${Math.floor(trainingProgress)}%`);
+      }
+      document.getElementById('progressBar').style.width = trainingProgress + '%';
+    }, 1000);
+  }
+
+  function addTrainingLog(message) {
+    const logArea = document.getElementById('trainingLog');
+    const currentTime = new Date().toLocaleTimeString();
+    logArea.innerText += `[${currentTime}] ${message}\n`;
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  // (5) 모델 배포
+  function deployModel() {
+    document.getElementById('deployMessage').innerText = '모델이 성공적으로 배포되었습니다!';
+    addTrainingLog('모델 배포 완료. (엔드포인트가 활성화되었습니다.)');
+    // 실제 환경에서는 모델 파일을 서버나 클라우드 환경(Kubernetes 등)에 배포
+  }
+</script>
+
 </body>
 </html>
